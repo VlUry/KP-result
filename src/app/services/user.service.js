@@ -3,7 +3,7 @@ import httpService from "./http.service";
 const userEndpoint = "user/";
 
 const userService = {
-    get: async () => {
+    fetchAll: async () => {
         const { data } = await httpService.get(userEndpoint);
         return data;
     },
@@ -12,6 +12,10 @@ const userService = {
             userEndpoint + payload._id,
             payload
         );
+        return data;
+    },
+    get: async (id) => {
+        const { data } = await httpService.get(userEndpoint + id);
         return data;
     }
 };

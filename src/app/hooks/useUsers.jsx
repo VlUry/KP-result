@@ -24,7 +24,7 @@ const UserProvider = ({ children }) => {
     }, [error]);
     async function getUsers() {
         try {
-            const { content } = await userService.get();
+            const { content } = await userService.fetchAll();
             setUsers(content);
             setLoading(false);
         } catch (error) {

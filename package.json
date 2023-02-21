@@ -21,7 +21,7 @@
         "web-vitals": "^1.0.1"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "start": "react-scripts --openssl-legacy-provider start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
@@ -46,6 +46,7 @@
         ]
     },
     "devDependencies": {
+        "@babel/helper-compilation-targets": "^7.20.7",
         "eslint": "^7.32.0",
         "eslint-config-airbnb": "^18.2.1",
         "eslint-config-standard": "^16.0.3",
