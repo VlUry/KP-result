@@ -73,7 +73,7 @@ const AuthProvider = ({ children }) => {
 
     async function getUser(data) {
         try {
-            const { content } = userService.get(data);
+            const { content } = userService.getById(data);
             setUser(content);
         } catch (error) {
             errorCatcher(error);

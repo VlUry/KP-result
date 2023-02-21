@@ -14,7 +14,7 @@ const userService = {
         );
         return data;
     },
-    get: async (id) => {
+    getById: async (id) => {
         const { data } = await httpService.get(userEndpoint + id);
         return data;
     }
