@@ -42,6 +42,44 @@ const AuthProvider = ({ children }) => {
             // throw new Error
         }
     }
+
+    async function signIn({ email, password, ...rest }) {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_KEY}`;
+
+        try {
+            const { data } = await httpAuth.post(url, {
+                email,
+                password,
+                returnSecureToken: true
+            });
+            setTokens(data);
+            await getUser(data.localId);
+        } catch (error) {
+            errorCatcher(error);
+            const { code, message } = error.response.data.error;
+            console.log(code, message);
+            if (code === 400) {
+                let errorObject = { email: message };
+                if (message === "INVALID_PASSWORD") {
+                    errorObject = {
+                        password: message
+                    };
+                }
+                throw errorObject;
+            }
+            // throw new Error
+        }
+    }
+
+    async function getUser(data) {
+        try {
+            const { content } = userService.getById(data);
+            setUser(content);
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
+
     async function createUser(data) {
         try {
             const { content } = userService.create(data);
@@ -61,7 +99,7 @@ const AuthProvider = ({ children }) => {
         }
     }, [error]);
     return (
-        <AuthContext.Provider value={{ signUp, currentUser }}>
+        <AuthContext.Provider value={{ signIn, signUp, currentUser }}>
             {children}
         </AuthContext.Provider>
     );
