@@ -22,6 +22,7 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
     const [currentUser, setUser] = useState();
     const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(true);
 
     function getRandomNun(min, max) {
         return Math.floor(Math.random() * (max - min) + min);
@@ -70,7 +71,7 @@ const AuthProvider = ({ children }) => {
                 returnSecureToken: true
             });
             setTokens(data);
-            getUser();
+            await getUser();
         } catch (error) {
             errorCatcher(error);
             const { code, message } = error.response.data.error;
@@ -94,6 +95,8 @@ const AuthProvider = ({ children }) => {
             setUser(content);
         } catch (error) {
             errorCatcher(error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -116,15 +119,17 @@ const AuthProvider = ({ children }) => {
         }
     }, [error]);
 
-    useEffect(() => {
+    useEffect(async () => {
         if (localStorageService.getAccessToken()) {
-            getUser();
+            await getUser();
+        } else {
+            setLoading(false);
         }
     }, []);
 
     return (
         <AuthContext.Provider value={{ signIn, signUp, currentUser }}>
-            {children}
+            {!isLoading ? children : "Loading..."}
         </AuthContext.Provider>
     );
 };
