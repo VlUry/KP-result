@@ -6,15 +6,17 @@ import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import BackHistoryButton from "../common/backButton";
-import { useQualities } from "../../hooks/useQualities";
 import { useProfessions } from "../../hooks/useProfession";
 import { useAuth } from "../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { getQualities, getQualitiesLoadingStatus } from "../../store/qualities";
 
 const EditUserPage = () => {
     const { userId } = useParams();
     const history = useHistory();
 
-    const { qualities } = useQualities();
+    const qualities = useSelector(getQualities());
+    const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const { professions } = useProfessions();
     const { currentUser, editUser } = useAuth();
 
@@ -104,13 +106,15 @@ const EditUserPage = () => {
                             onChange={handleChange}
                             label="Выберите ваш пол"
                         />
-                        <MultiSelectField
-                            defaultValue={data.qualities}
-                            options={qualities}
-                            onChange={handleChange}
-                            name="qualities"
-                            label="Выберите ваши качества"
-                        />
+                        {!qualitiesLoading && (
+                            <MultiSelectField
+                                defaultValue={data.qualities}
+                                options={qualities}
+                                onChange={handleChange}
+                                name="qualities"
+                                label="Выберите ваши качества"
+                            />
+                        )}
                         <button
                             type="submit"
                             disabled={!isValid}

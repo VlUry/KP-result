@@ -5,10 +5,11 @@ import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import CheckBoxField from "../common/form/checkBoxField";
-import { useQualities } from "../../hooks/useQualities";
 import { useProfessions } from "../../hooks/useProfession";
 import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { getQualities, getQualitiesLoadingStatus } from "../../store/qualities";
 
 const RegisterForm = () => {
     const history = useHistory();
@@ -22,7 +23,8 @@ const RegisterForm = () => {
         licence: false
     });
     const { signUp } = useAuth();
-    const { qualities } = useQualities();
+    const qualities = useSelector(getQualities());
+    const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const { professions } = useProfessions();
 
     const [errors, setErrors] = useState({});
@@ -148,13 +150,15 @@ const RegisterForm = () => {
                 onChange={handleChange}
                 label="Выберите ваш пол"
             />
-            <MultiSelectField
-                options={qualities}
-                onChange={handleChange}
-                defaultValue={data.qualities}
-                name="qualities"
-                label="Выберите ваши качества"
-            />
+            {!qualitiesLoading && (
+                <MultiSelectField
+                    options={qualities}
+                    onChange={handleChange}
+                    defaultValue={data.qualities}
+                    name="qualities"
+                    label="Выберите ваши качества"
+                />
+            )}
             <CheckBoxField
                 value={data.licence}
                 onChange={handleChange}
