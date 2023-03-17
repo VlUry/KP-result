@@ -6,10 +6,13 @@ import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import BackHistoryButton from "../common/backButton";
-import { useProfessions } from "../../hooks/useProfession";
 import { useAuth } from "../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import { getQualities, getQualitiesLoadingStatus } from "../../store/qualities";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../store/professions";
 
 const EditUserPage = () => {
     const { userId } = useParams();
@@ -17,7 +20,8 @@ const EditUserPage = () => {
 
     const qualities = useSelector(getQualities());
     const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
-    const { professions } = useProfessions();
+    const professions = useSelector(getProfessions());
+    const professionsLoading = useSelector(getProfessionsLoadingStatus());
     const { currentUser, editUser } = useAuth();
 
     const [data, setData] = useState(currentUser);
@@ -86,15 +90,17 @@ const EditUserPage = () => {
                             onChange={handleChange}
                             error={errors.email}
                         />
-                        <SelectField
-                            label="Выбери свою профессию"
-                            defaultOption="Choose..."
-                            options={professions}
-                            name="profession"
-                            onChange={handleChange}
-                            value={data.profession}
-                            error={errors.profession}
-                        />
+                        {!professionsLoading && (
+                            <SelectField
+                                label="Выбери свою профессию"
+                                defaultOption="Choose..."
+                                options={professions}
+                                name="profession"
+                                onChange={handleChange}
+                                value={data.profession}
+                                error={errors.profession}
+                            />
+                        )}
                         <RadioField
                             options={[
                                 { name: "Male", value: "male" },
