@@ -5,11 +5,14 @@ import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import CheckBoxField from "../common/form/checkBoxField";
-import { useProfessions } from "../../hooks/useProfession";
 import { useAuth } from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getQualities, getQualitiesLoadingStatus } from "../../store/qualities";
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from "../../store/professions";
 
 const RegisterForm = () => {
     const history = useHistory();
@@ -25,7 +28,8 @@ const RegisterForm = () => {
     const { signUp } = useAuth();
     const qualities = useSelector(getQualities());
     const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
-    const { professions } = useProfessions();
+    const professions = useSelector(getProfessions());
+    const professionsLoading = useSelector(getProfessionsLoadingStatus());
 
     const [errors, setErrors] = useState({});
 
@@ -130,15 +134,17 @@ const RegisterForm = () => {
                 onChange={handleChange}
                 error={errors.password}
             />
-            <SelectField
-                label="Выбери свою профессию"
-                defaultOption="Choose..."
-                options={professions}
-                name="profession"
-                onChange={handleChange}
-                value={data.profession}
-                error={errors.profession}
-            />
+            {!professionsLoading && (
+                <SelectField
+                    label="Выбери свою профессию"
+                    defaultOption="Choose..."
+                    options={professions}
+                    name="profession"
+                    onChange={handleChange}
+                    value={data.profession}
+                    error={errors.profession}
+                />
+            )}
             <RadioField
                 options={[
                     { name: "Male", value: "male" },
