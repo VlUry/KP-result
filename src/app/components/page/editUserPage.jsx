@@ -13,6 +13,7 @@ import {
     getProfessions,
     getProfessionsLoadingStatus
 } from "../../store/professions";
+import { getCurrentUserData } from "../../store/users";
 
 const EditUserPage = () => {
     const { userId } = useParams();
@@ -22,7 +23,8 @@ const EditUserPage = () => {
     const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const professions = useSelector(getProfessions());
     const professionsLoading = useSelector(getProfessionsLoadingStatus());
-    const { currentUser, editUser } = useAuth();
+    const currentUser = useSelector(getCurrentUserData());
+    const { editUser } = useAuth();
 
     const [data, setData] = useState(currentUser);
 

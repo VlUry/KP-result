@@ -13,12 +13,15 @@ const AppLoader = ({ children }) => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector(getIsLoggedIn());
     const usersLoadingStatus = useSelector(getUsersLoadingStatus());
+
     useEffect(() => {
         dispatch(loadQualitiesList());
         dispatch(loadProfessionsList());
         if (isLoggedIn) dispatch(loadUsersList());
-    }, []);
+    }, [isLoggedIn]);
+
     if (usersLoadingStatus) return "Loading...";
+
     return children;
 };
 
