@@ -2,18 +2,29 @@ import authService from "../services/auth.service";
 import localStorageService from "../services/localStorage.service";
 import userService from "../services/user.service";
 import history from "../utils/history";
+import { createSlice, createAction } from "@reduxjs/toolkit";
 
-const { createSlice, createAction } = require("@reduxjs/toolkit");
+const initialState = localStorageService.getAccessToken()
+    ? {
+          entities: null,
+          isLoading: true,
+          error: null,
+          auth: { userId: localStorageService.getUserId() },
+          isLoggedIn: true,
+          dataLoaded: false
+      }
+    : {
+          entities: null,
+          isLoading: false,
+          error: null,
+          auth: null,
+          isLoggedIn: false,
+          dataLoaded: false
+      };
 
 const usersSlice = createSlice({
     name: "users",
-    initialState: {
-        entities: null,
-        isLoading: true,
-        error: null,
-        auth: null,
-        isLoggedIn: false
-    },
+    initialState,
     reducers: {
         usersRequested: (state) => {
             state.isLoading = true;
@@ -21,6 +32,7 @@ const usersSlice = createSlice({
         usersReceived: (state, action) => {
             state.isLoading = false;
             state.entities = action.payload;
+            state.dataLoaded = true;
         },
         usersRequestFailed: (state, action) => {
             state.isLoading = false;
@@ -126,5 +138,8 @@ export const getUserById = (userId) => (state) => {
         return state.users.entities.find((user) => user._id === userId);
     }
 };
+export const getIsLoggedIn = () => (state) => state.users.isLoggedIn;
+export const getDataStatus = () => (state) => state.users.dataLoaded;
+export const getCurrentUserId = () => (state) => state.users.auth.userId;
 
 export default usersReducer;
