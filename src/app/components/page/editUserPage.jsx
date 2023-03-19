@@ -6,25 +6,24 @@ import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import BackHistoryButton from "../common/backButton";
-import { useAuth } from "../../hooks/useAuth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getQualities, getQualitiesLoadingStatus } from "../../store/qualities";
 import {
     getProfessions,
     getProfessionsLoadingStatus
 } from "../../store/professions";
-import { getCurrentUserData } from "../../store/users";
+import { editUser, getCurrentUserData } from "../../store/users";
 
 const EditUserPage = () => {
     const { userId } = useParams();
     const history = useHistory();
+    const dispatch = useDispatch();
 
     const qualities = useSelector(getQualities());
     const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const professions = useSelector(getProfessions());
     const professionsLoading = useSelector(getProfessionsLoadingStatus());
     const currentUser = useSelector(getCurrentUserData());
-    const { editUser } = useAuth();
 
     const [data, setData] = useState(currentUser);
 
@@ -34,7 +33,11 @@ const EditUserPage = () => {
         e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
-        editUser(data);
+        const newData = {
+            ...data,
+            qualities: data.qualities.map((q) => (q.value ? q.value : q))
+        };
+        dispatch(editUser(newData));
         history.push(`/users/${userId}`);
     };
 
