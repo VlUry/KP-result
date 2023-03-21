@@ -3,6 +3,7 @@ import localStorageService from "../services/localStorage.service";
 import userService from "../services/user.service";
 import history from "../utils/history";
 import { createSlice, createAction } from "@reduxjs/toolkit";
+import { generateAuthError } from "../utils/generateAuthError";
 
 const initialState = localStorageService.getAccessToken()
     ? {
@@ -34,6 +35,9 @@ const usersSlice = createSlice({
             state.entities = action.payload;
             state.dataLoaded = true;
         },
+        authRequested: (state) => {
+            state.error = null;
+        },
         usersRequestFailed: (state, action) => {
             state.isLoading = false;
             state.error = action.payload;
@@ -44,7 +48,6 @@ const usersSlice = createSlice({
         },
         authRequestFailed: (state, action) => {
             state.error = action.payload;
-            state.isLoggedIn = false;
         },
         userCreateSucces: (state, action) => {
             if (Array.isArray(state.entities)) {
@@ -72,6 +75,7 @@ const {
     usersRequested,
     usersReceived,
     usersRequestFailed,
+    authRequested,
     authRequestSuccess,
     authRequestFailed,
     userCreateSucces,
@@ -79,7 +83,6 @@ const {
     userEditSucces
 } = actions;
 
-const authRequested = createAction("users/authRequested");
 const userCreateRequested = createAction("users/userCreateRequested");
 const userCreateFailed = createAction("users/userCreateFailed");
 const userEditRequested = createAction("users/userEditRequested");
@@ -133,7 +136,13 @@ export const signIn =
             dispatch(authRequestSuccess({ userId: data.localId }));
             history.push(redirect);
         } catch (err) {
-            authRequestFailed(err.message);
+            const { code, message } = err.response.data.error;
+            if (code === 400) {
+                const errorMessage = generateAuthError(message);
+                dispatch(authRequestFailed(errorMessage));
+            } else {
+                dispatch(authRequestFailed(err.message));
+            }
         }
     };
 
@@ -180,5 +189,6 @@ export const getUserById = (userId) => (state) => {
 export const getIsLoggedIn = () => (state) => state.users.isLoggedIn;
 export const getDataStatus = () => (state) => state.users.dataLoaded;
 export const getCurrentUserId = () => (state) => state.users.auth.userId;
+export const getAuthError = () => (state) => state.users.error;
 
 export default usersReducer;

@@ -23,6 +23,12 @@ const Comments = () => {
 
     const comments = useSelector(getComments());
 
+    useEffect(() => {
+        dispatch(loadCommentsList(userId));
+    }, [userId]);
+
+    const isLoading = useSelector(getCommentsLoadingStatus());
+    const comments = useSelector(getComments());
     const handleSubmit = (data) => {
         dispatch(createComment({ data, pageId: userId }));
     };
@@ -36,12 +42,10 @@ const Comments = () => {
     return (
         <>
             <div className="card mb-2">
-                {" "}
                 <div className="card-body ">
                     <AddCommentForm onSubmit={handleSubmit} />
                 </div>
             </div>
-
             <div className="card mb-3">
                 <div className="card-body ">
                     <h2>Comments</h2>
